@@ -1,0 +1,22 @@
+---
+  - name: Daily maintenance
+    hosts: leandojoServers
+#    become: yes
+#    become_user: root
+    tasks:
+#      - name: update all packages
+#        apt:
+#          name: '*'
+#          state: latest
+       - name: update and upgrade apt
+         apt:
+           upgrade: yes
+           update_cache: yes
+           cache_valid_time: 86400
+#      - name: check os release file
+#        shell: cat /etc/os-release
+#        args:
+#          executable: /bin/bash
+#        register: output
+#      - debug:
+#          var: output.stdout_lines
