@@ -21,5 +21,10 @@ ansible-playbook -i path/to/inventory -b PLAYBOOK.yml -e@path/to/vault --ask-vau
 - Remote docker volumes backup via ansible
 - Docker image update via ansible
 - Push docker compose environment and start/stop/update it
+- Playbook to 'timedatectl set-timezone UTC'
+- Playbook for stopping all stacks that were started with push-compose and push-swarm
+- Playbook for updating all images present on a docker host that were run with push-compose or push-swarm (known location for docker-compose files)
+- Playbook for backing up volumes to borg across a docker cluster
+- Move to nfs-ganesha and high availability
 
 [FIXME: Mongorita breaks when volume is deleted but directory isn't]
