@@ -1,0 +1,10 @@
+- name: Ensure docker is installed
+  package:
+    name: docker.io
+    state: latest
+#   when: ansible_os_family == "Debian"
+  notify: start docker daemon
+- name: Ensure docker-compose is installed
+  package:
+    name: docker-compose
+    state: latest

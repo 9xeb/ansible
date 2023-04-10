@@ -1,0 +1,18 @@
+---
+#  command:
+#    cmd: docker-compose -f docker-compose.yml -f {{ stack_name }}/docker-compose.yml --env-file {{ stack_name }}/.env up -d --build
+#    chdir: purpleids
+- name: Run docker compose stack
+  docker_compose:
+    project_src: docker/{{ project_name }}
+#    files: "{{ compose_files }}"
+    files:
+      - docker-compose.yml
+      - "{{ stack_name ~ '/docker-compose.yml' }}"
+    env_file: "{{ stack_name ~ '/.env' }}"
+#    env_file: "{{ env_file }}"
+    build: yes
+    pull: yes
+    state: "{{ status }}"
+    debug: yes
+#    remove_volumes: "{{ remove_volumes }}"

@@ -1,0 +1,13 @@
+---
+- name: Ensure docker and docker-compose are installed
+  import_tasks:
+    file: ensure-docker-compose.yml
+  become: true
+- name: Copy docker compose configuration
+  import_tasks:
+    file: copy-config.yml
+  become: false
+- name: Run docker compose configuration
+  import_tasks:
+    file: run-config.yml
+  become: true

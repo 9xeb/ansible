@@ -1,0 +1,21 @@
+---
+- name: Ensure main directory exists
+  file:
+    path: docker/{{ project_name }}
+    state: directory
+- name: Push main compose file
+  copy:
+    src: docker-compose.yml
+    dest: docker/{{ project_name }}/docker-compose.yml
+  register: main_compose
+- name: Push all config files
+    src: .
+    dest: docker/{{ project_name }}
+#   notify: stop stack and remove volumes
+- name: stop stack and remove volumes
+  command:
+    cmd: docker-compose -f docker-compose.yml -f {{ stack_name }}/docker-compose.yml --env-file {{ stack_name }}/.env down -v
+    chdir: docker/{{ project_name }}
+  become: true
+  when: main_compose.changed
+  ignore_errors: true
