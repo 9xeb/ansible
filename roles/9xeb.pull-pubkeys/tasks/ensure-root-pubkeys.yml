@@ -1,0 +1,16 @@
+# Required directories for volumes mounts
+# zeek-logs
+# zeek-spool
+# suricata-logs
+---
+- name: Create .ssh directory if non existent
+  file:
+    path: "/root/.ssh"
+    state: directory
+    owner: root
+    group: root
+    mode: '0600'
+- name: Generate key pair if non existent
+  openssh_keypair:
+    path: /root/.ssh/id_rsa
+    size: 4096

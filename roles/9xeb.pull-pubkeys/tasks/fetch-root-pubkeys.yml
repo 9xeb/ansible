@@ -1,0 +1,6 @@
+---
+- name: Retrieve ssh pubkey
+  fetch:
+    src: /root/.ssh/id_rsa.pub
+    dest: "{{ './.ssh/' ~ inventory_hostname ~ '.id_rsa.pub' }}"
+    flat: yes

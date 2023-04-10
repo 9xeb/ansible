@@ -1,0 +1,9 @@
+# Required directories for volumes mounts
+# zeek-logs
+# zeek-spool
+# suricata-logs
+---
+- name: Setup openssh client
+  package:
+    name: openssh-client
+    state: latest

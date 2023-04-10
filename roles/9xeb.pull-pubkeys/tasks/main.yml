@@ -1,0 +1,12 @@
+---
+- name: Ensure openssh client is installed
+  import_tasks:
+    file: ensure-openssh-client.yml
+  become: false
+- name: Ensure ssh keys for root user are generated
+  import_tasks:
+    file: ensure-root-pubkeys.yml
+  become: true
+- name: Fetch ssh pubkeys for root users
+  import_tasks:
+    file: fetch-root-pubkeys.yml
