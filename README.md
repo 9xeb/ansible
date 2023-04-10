@@ -10,14 +10,15 @@ push-compose.yml applies volumes and containers across your cluster, use it ever
 Since volumes may hold delicate data, their addition is part of the normal workflow; however, their destruction/regeneration is handled via separate playbooks that must be called explicitly by the user.
 
 These ansible playbooks are made for pushing an unchanging working configuration. Replacing and removing volumes after pushing might break stuff.
-For testing and debugging, just log into your host and start/stop/edit compose.
+For testing and debugging, just log into your host and start/stop/edit compose like you would do without ansible.
 
-## Run command
+## Example run command
 ```
 ansible-playbook -i path/to/inventory -b PLAYBOOK.yml -e@path/to/vault --ask-vault-pass
 ```
 
 # TO-DO
+- Move all these below to issues
 - Remote docker volumes backup via ansible
 - Docker image update via ansible
 - Push docker compose environment and start/stop/update it
@@ -26,5 +27,6 @@ ansible-playbook -i path/to/inventory -b PLAYBOOK.yml -e@path/to/vault --ask-vau
 - Playbook for updating all images present on a docker host that were run with push-compose or push-swarm (known location for docker-compose files)
 - Playbook for backing up volumes to borg across a docker cluster
 - Move to nfs-ganesha and high availability
+- Configurations for setting up wireguard tunnels anywhere
 
 [FIXME: Mongorita breaks when volume is deleted but directory isn't]
