@@ -1,0 +1,6 @@
+---
+#collections:
+#  - name: buluma.roles
+- src: buluma.nfs
+- src: buluma.bootstrap
+#- src: community.docker

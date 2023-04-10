@@ -1,0 +1,21 @@
+- name: Pull pubkeys
+  hosts: dockerHosts
+  vars_files:
+    - vars/main.yml
+  roles:
+    - 9xeb.pull-pubkeys
+
+- name: Push pubkeys and setup sshnfs server
+  hosts: storageServers
+  vars_files:
+    - vars/main.yml
+  roles:
+    - 9xeb.push-pubkeys
+    - 9xeb.setup-sshnfs-server
+
+- name: Setup sshnfs clients
+  hosts: dockerHosts
+  vars_files:
+    - vars/main.yml
+  roles:
+    - 9xeb.setup-sshnfs-client

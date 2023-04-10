@@ -1,0 +1,15 @@
+# Required directories for volumes mounts
+# zeek-logs
+# zeek-spool
+# suricata-logs
+---
+
+- name: Push sshnfs configuration
+  import_playbook: push-sshnfs.yml
+
+- name: Create volumes across cluster
+  hosts: dockerHosts
+  vars:
+    project_name: purpleids
+  roles:
+    - 9xeb.push-volumes

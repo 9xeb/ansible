@@ -1,0 +1,6 @@
+# Turn this into a loop for scaling, and do the same for push-compose, using ansible dictionaries if necessary
+
+#- name: Perform volume regeneration (will destroy and rebuild)
+
+- import_playbook: purge-compose.yml
+- import_playbook: push-compose.yml
