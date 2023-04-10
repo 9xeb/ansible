@@ -1,0 +1,17 @@
+---
+- name: Install autossh package
+  package:
+    name: autossh
+    state: latest
+- name: Ensure known_hosts file exists
+  file:
+    path: /root/.ssh/known_hosts
+    owner: root
+    group: root
+    mode: '0660'
+    state: touch
+- name: Append known_hosts file from manager
+  lineinfile:
+    dest: /root/.ssh/known_hosts
+    line: "{{ item }}"
+  loop: "{{ lookup('file', '.ssh/known_hosts').splitlines() }}"

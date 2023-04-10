@@ -1,0 +1,10 @@
+---
+
+- name: Ensure autossh is installed
+  import_tasks:
+    file: ensure-autossh.yml
+  become: true
+- name: Push and start sshnfs service
+  import_tasks:
+    file: push-sshnfs.yml
+  become: true

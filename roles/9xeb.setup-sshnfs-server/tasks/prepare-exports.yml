@@ -1,0 +1,21 @@
+---
+#- name: Setting fact for export directory
+#  ansible.builtin.set_fact:
+#    nfs_exports: [ "{{ export_dir ~ ' localhost(rw,sync,wdelay,no_subtree_check,no_root_squash,insecure)'}}" ]
+- name: Prepare volume directories in export directory
+  file:
+    path: "{{ export_dir ~ '/' ~ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0740'
+  loop: "{{ docker_volumes }}"
+- name: Add unprivileged user for nfs via ssh tunneling purposes
+  ansible.builtin.user:
+    name: "{{ ssh_tunneling_user }}"
+- name: Ensuring nfs export is present
+  lineinfile:
+    path: /etc/exports
+    line: "{{ export_dir ~ ' localhost(rw,sync,wdelay,no_subtree_check,no_root_squash,insecure)' }}"
+- name: Refresh active exports
+  command: exportfs -arv

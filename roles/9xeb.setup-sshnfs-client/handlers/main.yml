@@ -1,0 +1,6 @@
+- name: enable and start sshnfs-tunnel
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    state: restarted
+    name: "{{ 'sshnfs-tunnel@' ~ ssh_tunneling_user ~ '@' ~ groups['storageServers'][0] }}"

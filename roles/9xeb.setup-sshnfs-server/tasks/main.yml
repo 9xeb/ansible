@@ -1,0 +1,13 @@
+# Required directories for volumes mounts
+# zeek-logs
+# zeek-spool
+# suricata-logs
+---
+- name: Set localhost only export for docker volumes via SSH
+  import_tasks:
+    file: prepare-exports.yml
+  become: true
+- name: Configure unprivileged user for SSH tunneling to NFS
+  import_tasks:
+    file: configure-ssh-user.yml
+  become: true

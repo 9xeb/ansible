@@ -1,0 +1,7 @@
+---
+- name: Setup custom autossh service file
+  template:
+    # template expects {{ ssh_tunneling_local_port }}
+    src: autossh-nfs-tunnel@.service.tpl
+    dest: '/etc/systemd/system/sshnfs-tunnel@.service'
+  notify: enable and start sshnfs-tunnel

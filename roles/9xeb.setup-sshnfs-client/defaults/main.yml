@@ -1,0 +1,5 @@
+ssh_tunneling_user: tunneler
+
+# expected by template systemd file
+ssh_tunneling_local_port: 12345
+
