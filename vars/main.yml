@@ -1,0 +1,18 @@
+export_dir: /srv/swarm/docker/volumes
+docker_volumes:
+  - zeek-logs
+  - zeek-spool
+  - suricata-logs
+  - crowdsec-database
+  - rita-database
+  - threatintel-database
+  - threatintel-logs
+  - rita-logs
+  - dvwa-logs
+  - swag-logs
+ssh_tunneling_user: tunneler
+ssh_tunneling_local_port: 12345
+requested_stacks:
+  - { project_name: purpleids, stack_name: network, target: 'networkHosts', status: present }
+  - { project_name: purpleids, stack_name: analysis, target: 'analysisHosts', status: present }
+  - { project_name: purpleids, stack_name: dvwa, target: 'analysisHosts', status: present }
