@@ -7,8 +7,8 @@
     project_src: docker/{{ project_name }}
 #    files: "{{ compose_files }}"
     files:
-      - docker-compose.yml
-      - "{{ stack_name ~ '/docker-compose.yml' }}"
+      - docker-compose-ansible.yml
+      - "{{ stack_name ~ '/docker-compose-ansible.yml' }}"
     env_file: "{{ stack_name ~ '/.env' }}"
 #    env_file: "{{ env_file }}"
     build: yes
