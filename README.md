@@ -17,7 +17,7 @@ For testing and debugging, just log into your host and start/stop/edit compose l
 ansible-playbook -i path/to/inventory -b PLAYBOOK.yml -e@path/to/vault --ask-vault-pass
 ```
 
-# TO-DO
+# Future additions
 - Move all these below to issues
 - Remote docker volumes backup via ansible
 - Docker image update via ansible
