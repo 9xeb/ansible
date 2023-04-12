@@ -19,7 +19,8 @@ ansible-playbook -i path/to/inventory -b PLAYBOOK.yml -e@path/to/vault --ask-vau
 
 # Future additions
 - Move all these below to issues
-- Remote docker volumes backup via ansible
+- Docker swarm managers and workers setup, and pushing configurations
+- Remote docker volumes backup
 - Docker image update via ansible
 - Push docker compose environment and start/stop/update it
 - Playbook to 'timedatectl set-timezone UTC'
