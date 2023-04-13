@@ -13,6 +13,6 @@ docker_volumes:
 ssh_tunneling_user: tunneler
 ssh_tunneling_local_port: 12345
 requested_stacks:
-  - { project_name: purpleids, stack_name: network, target: 'networkHosts', status: present }
-  - { project_name: purpleids, stack_name: analysis, target: 'analysisHosts', status: present }
+  - { project_name: purpleids, stack_name: nsm, target: 'networkHosts', status: present }
+  - { project_name: purpleids, stack_name: purpleids, target: 'analysisHosts', status: present }
   - { project_name: purpleids, stack_name: dvwa, target: 'analysisHosts', status: present }
