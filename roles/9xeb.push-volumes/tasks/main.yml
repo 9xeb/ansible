@@ -14,7 +14,7 @@
     src: docker-compose-ansible.yml
     dest: docker/docker-compose-ansible.yml
 - name: Run compose file containing volumes definitions
-  command: docker-compose -f docker/{{ project_name}}/docker-compose.yml up -d --build
+  command: docker-compose -f docker/docker-compose-ansible.yml up -d --build
 #  docker_compose:
 #    project_src: docker/
 #    files:
