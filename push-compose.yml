@@ -17,7 +17,7 @@
       when: "item.target in group_names"
       vars:
         # remote directory name
-        project_name: "{{ item.project_name }}"
+        #project_name: "{{ item.project_name }}"
         # location of the compose override in ../docker/
         stack_name: "{{ item.stack_name }}"
         status: "{{ item.status }}"
