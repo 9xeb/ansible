@@ -7,7 +7,7 @@
 
 - name: Ensure main directory exists
   file:
-    path: docker/
+    path: docker/{{ project_name }}
     state: directory
 - name: Push main compose file
   copy:
