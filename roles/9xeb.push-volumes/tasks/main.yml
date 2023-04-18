@@ -6,14 +6,17 @@
 
 
 - name: Ensure main directory exists
+  become: false
   file:
     path: docker/{{ project_name }}
     state: directory
 - name: Push main compose file
+  become: false
   copy:
     src: docker-compose-ansible.yml
     dest: docker/{{ project_name }}/docker-compose-ansible.yml
 - name: Run compose file containing volumes definitions
+  become: true
   command: docker-compose -f docker/{{ project_name }}/docker-compose-ansible.yml up -d --build
 #  docker_compose:
 #    project_src: docker/
