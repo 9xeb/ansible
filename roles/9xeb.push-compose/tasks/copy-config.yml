@@ -11,9 +11,11 @@
 #   notify: stop stack and remove volumes
 - name: Push targeted compose override directory
   copy:
-    src: "{{ stack_name }}"
+#    src: "{{ stack_name }}"
 #    src: "{{ item }}"
-    dest: docker/{{ project_name }}
+#    dest: docker/{{ project_name }}/{{ stack_name }}
+    src: "{{ stack_name ~ '/' }}"
+    dest: docker/{{ project_name }}/{{ stack_name }}/
 #  loop: "{{ stack_list }}"
 #- name: stop stack and remove volumes
 #  command:
