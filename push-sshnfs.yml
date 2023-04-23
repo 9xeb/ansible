@@ -9,6 +9,8 @@
   hosts: storageServers
   vars_files:
     - vars/main.yml
+  vars:
+    ssh_user: "{{ ssh_tunneling_user }}"
   roles:
     - 9xeb.push-pubkeys
     - 9xeb.setup-sshnfs-server
