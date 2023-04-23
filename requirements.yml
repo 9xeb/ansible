@@ -3,4 +3,5 @@
 #  - name: buluma.roles
 - src: buluma.nfs
 - src: buluma.bootstrap
+- src: m3nu.ansible_role_borgbackup
 #- src: community.docker
