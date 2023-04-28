@@ -55,10 +55,14 @@
       include_role:
         name: m3nu.ansible_role_borgbackup
       vars:
-        borg_repository: "{{ 'ssh://borg@' ~ item.1 ~ '/./' ~ inventory_hostname }}"
+        borg_repository: "{{ 'ssh://borg@' ~ item.1 ~ '/./' ~ inventory_hostname ~ '-' ~ item.0.repo_name }}"
         borg_source_directories: "{{ item.0.source_directories }}"
         borg_encryption_passphrase: "{{ item.0.repo_password }}"
         borgmatic_config_name: "{{ item.1 ~ '.yaml' }}"
+        borg_retention_policy:
+          keep_daily: 1
+          keep_weekly: 1
+          keep_monthly: 1
       loop: "{{ requested_backups|product(groups['backupHosts'])|list }}"
       when: "item.0.target in group_names"
     - name: Ensure all repos exist
