@@ -14,8 +14,8 @@
 #    src: "{{ stack_name }}"
 #    src: "{{ item }}"
 #    dest: docker/{{ project_name }}/{{ stack_name }}
-    src: "{{ stack_name ~ '/' }}"
-    dest: docker/{{ project_name }}/{{ stack_name }}/
+    src: "{{ stack_dir ~ '/' }}"
+    dest: docker/{{ project_name }}/{{ stack_dir }}/
 #  loop: "{{ stack_list }}"
 #- name: stop stack and remove volumes
 #  command:

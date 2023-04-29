@@ -19,11 +19,16 @@
         # remote directory name
         #project_name: "{{ item.project_name }}"
         # location of the compose override in ../docker/
-        stack_name: "{{ item.stack_name }}"
-        status: "{{ item.status }}"
+        stack_conf: "{{ item.conf }}"
+        stack_dir: "{{ item.dir }}"
+        stack_env: "{{ item.env }}"
+        stack_status: "{{ item.status }}"
+      with_items: "{{ stacks }}"
+#        stack_name: "{{ item.stack_name }}"
+#        status: "{{ item.status }}"
       #  roles:
       #    - 9xeb.push-compose
-      with_items: "{{ requested_stacks }}"
+#      with_items: "{{ requested_stacks }}"
 #        - { project_name: purpleids, stack_name: network, target: 'networkHosts', status: present }
 #        - { project_name: purpleids, stack_name: analysis, target: 'analysisHosts', status: present }
 #        - { project_name: purpleids, stack_name: dvwa, target: 'analysisHosts', status: present }

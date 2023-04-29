@@ -6,10 +6,11 @@
   docker_compose:
     project_src: docker/{{ project_name }}
 #    files: "{{ compose_files }}"
-    files:
-      - docker-compose-ansible.yml
-      - "{{ stack_name ~ '/docker-compose-ansible.yml' }}"
-    env_file: "{{ stack_name ~ '/.env' }}"
+    files: "{{ stack_conf }}"
+#      - docker-compose-ansible.yml
+#      - "{{ stack_name ~ '/docker-compose-ansible.yml' }}"
+#    env_file: "{{ stack_name ~ '/.env' }}"
+    env_file: "{{ stack_env }}"
 #    env_file: "{{ env_file }}"
     build: yes
     pull: yes
