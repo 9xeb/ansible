@@ -14,6 +14,6 @@
 #    env_file: "{{ env_file }}"
     build: yes
     pull: yes
-    state: "{{ status }}"
+    state: "{{ stack_status }}"
     debug: yes
 #    remove_volumes: "{{ remove_volumes }}"
