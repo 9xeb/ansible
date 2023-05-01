@@ -2,7 +2,7 @@
 - name: Ensure openssh client is installed
   import_tasks:
     file: ensure-openssh-client.yml
-  become: false
+  become: true
 - name: Ensure ssh keys for root user are generated
   import_tasks:
     file: ensure-root-pubkeys.yml
