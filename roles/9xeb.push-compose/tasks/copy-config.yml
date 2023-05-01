@@ -10,9 +10,12 @@
 #  register: main_compose
 - name: Push compose files
   copy:
-    src: "{{ item }}"
-    dest: docker/{{ project_name }}/{{ item }}
-  with_items: "{{ stack_conf }}"
+    src: "{{ stack_item }}"
+    dest: docker/{{ project_name }}/{{ stack_item }}
+  loop: "{{ stack_conf }}"
+  loop_control:
+    loop_var: stack_item
+#  with_items: "{{ stack_conf }}"
 #   notify: stop stack and remove volumes
 - name: Push targeted compose override directory
   copy:
