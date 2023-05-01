@@ -19,7 +19,7 @@
         # remote directory name
         #project_name: "{{ item.project_name }}"
         # location of the compose override in ../docker/
-        stack_conf: "{{ item.conf }}"
+        stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
         stack_dir: "{{ item.dir }}"
         stack_env: "{{ item.env }}"
         stack_status: "{{ item.status }}"
