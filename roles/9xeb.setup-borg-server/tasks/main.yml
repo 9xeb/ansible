@@ -1,7 +1,7 @@
 - name: Ensure borgbackup is installed on backup host
   package:
    name: borgbackup
-    state: latest
+   state: latest
       # check if AllowGroups line is present
 - command: grep "^AllowGroups " /etc/ssh/sshd_config
   ignore_errors: yes
