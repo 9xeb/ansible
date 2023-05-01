@@ -3,11 +3,16 @@
   file:
     path: docker/{{ project_name }}
     state: directory
-- name: Push main compose file
+#- name: Push main compose file
+#  copy:
+#    src: docker-compose-ansible.yml
+#    dest: docker/{{ project_name }}/docker-compose-ansible.yml
+#  register: main_compose
+- name: Push compose files
   copy:
-    src: docker-compose-ansible.yml
-    dest: docker/{{ project_name }}/docker-compose-ansible.yml
-  register: main_compose
+    src: "{{ item }}"
+    dest: docker/{{ project_name }}/{{ item }}
+  with_items: "{{ stack_conf }}"
 #   notify: stop stack and remove volumes
 - name: Push targeted compose override directory
   copy:
