@@ -15,11 +15,13 @@
       include_role:
         name: 9xeb.push-compose
       when: "item.target in group_names"
+      set_fact: 
+        stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
       vars:
         # remote directory name
         #project_name: "{{ item.project_name }}"
         # location of the compose override in ../docker/
-        stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
+        #stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
         stack_dir: "{{ item.dir }}"
         stack_env: "{{ item.env }}"
         stack_status: "{{ item.status }}"
