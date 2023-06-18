@@ -1,0 +1,93 @@
+# set global variable once using the 'target self' trick
+- hosts: swarmManagers:swarmWorkers
+  tasks:
+    - set_fact:
+        # this is similar to a global variable
+        managers_list: []
+
+# scroll through managers and collect list of managers
+- name: Fetch list of all available managers
+  hosts: swarmManagers
+  become: true
+  tasks:
+    - block:
+      - name: Ensure jq is installed in manager node
+        package:
+          name: jq
+          state: present
+      - name: Check if there is at least one manager in the swarm
+        shell: docker info -f {{ '"' + '{{json .Swarm.RemoteManagers }}' + '"' }} | jq '.[].Addr' | cut -d'"' -f 2
+        register: manager_report
+      - set_fact:
+          managers_list: "{{ manager_report.stdout_lines }}"
+
+# managers are aligned once so they all know (including swarmManager[0]) the starting situation in the cluster
+- name: Align all managers on managers_list
+  hosts: swarmManagers
+  tasks:
+    - set_fact:
+        managers_list: "{{ (managers_list + hostvars[item]['managers_list']) | unique }}"
+      loop: "{{ groups['swarmManagers'] }}"
+    # - debug:
+    #     msg: "{{ managers_list }}"
+
+# init swarm in the first manager not that comes up, if managers_list is empty
+- name: Bootstrap Swarm in manager 0
+  hosts: swarmManagers[0]
+  tasks:
+    - debug:
+        msg: "{{ inventory_hostname }}"
+    - name: Initialize swarm in first manager, and fetch access tokens
+      block:
+      - name: Initialize Swarm in original manager
+        community.docker.docker_swarm:
+          state: present
+        register: manager_metadata
+      # - debug:
+      #     msg: "{{ manager_metadata }}"   
+      - name: Fetch original manager's address
+        shell: docker info -f {{ '"' + '{{json .Swarm.RemoteManagers }}' + '"' }} | jq '.[].Addr' | cut -d'"' -f 2
+        register: manager_report
+      - name: Add original manager's address to managers_list
+        set_fact:
+          managers_list: "{{ managers_list + [manager_report.stdout_lines[0]]}}"
+      when: 'managers_list | length == 0'
+
+
+- name: Check swarm status (again if bootstrap was necessary) and set manager_token and worker_token
+  hosts: swarmManagers[0]
+  tasks:
+    - name: Initialize Swarm in original manager
+      community.docker.docker_swarm:
+        state: present
+      register: manager_metadata
+    - name: Fetch original manager's address
+      shell: docker info -f {{ '"' + '{{json .Swarm.RemoteManagers }}' + '"' }} | jq '.[].Addr' | cut -d'"' -f 2
+      register: manager_report
+    - name: Set manager_token, worker_token and add original manager's address to managers_list
+      set_fact:
+        manager_token: "{{ manager_metadata.swarm_facts.JoinTokens.Manager }}"
+        worker_token: "{{ manager_metadata.swarm_facts.JoinTokens.Worker }}"
+
+
+- name: Align all swarm hosts' facts with manager 0
+  hosts: swarmManagers:swarmWorkers
+  tasks:
+    - set_fact:
+        managers_list: "{{ hostvars[groups['swarmManagers'][0]]['managers_list'] }}"
+        manager_token: "{{ hostvars[groups['swarmManagers'][0]]['manager_token'] }}"
+        worker_token: "{{ hostvars[groups['swarmManagers'][0]]['worker_token'] }}"
+
+- name: Ensure all swarm hosts join the swarm
+  hosts: swarmManagers:swarmWorkers
+  tasks:
+    # - debug:
+    #     msg: 
+    #       - "{{ ('swarmManagers' in group_names) | ternary(manager_token, worker_token) }}"
+    #       - "{{ managers_list }}"
+    - name: Add node to swarm
+      community.docker.docker_swarm:
+        state: join
+        join_token: "{{ ('swarmManagers' in group_names) | ternary(manager_token, worker_token) }}"
+        remote_addrs: "{{ managers_list }}"
+
