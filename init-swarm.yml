@@ -28,30 +28,23 @@
     - set_fact:
         managers_list: "{{ (managers_list + hostvars[item]['managers_list']) | unique }}"
       loop: "{{ groups['swarmManagers'] }}"
-    - debug:
-        msg: "{{ managers_list }}"
-
-# - hosts: 127.0.0.1
-#   tasks:
-#     - name: Debug managers list
-#       debug:
-#         msg: "{{ managers_list }}"
-#       when: 'managers_list | length > 0'
+    # - debug:
+    #     msg: "{{ managers_list }}"
 
 # init swarm in the first manager not that comes up, if managers_list is empty
 - name: Bootstrap Swarm in manager 0
   hosts: swarmManagers[0]
   tasks:
-    - debug:
-        msg: "{{ inventory_hostname }}"
+    # - debug:
+    #     msg: "{{ inventory_hostname }}"
     - name: Initialize swarm in first manager, and fetch access tokens
       block:
       - name: Initialize Swarm in original manager
         community.docker.docker_swarm:
           state: present
         register: manager_metadata
-      - debug:
-          msg: "{{ manager_metadata }}"   
+      # - debug:
+      #     msg: "{{ manager_metadata }}"   
       - name: Fetch original manager's address
         shell: docker info -f {{ '"' + '{{json .Swarm.RemoteManagers }}' + '"' }} | jq '.[].Addr' | cut -d'"' -f 2
         register: manager_report
@@ -92,10 +85,10 @@
 - name: Ensure all swarm hosts join the swarm
   hosts: swarmManagers:swarmWorkers
   tasks:
-    - debug:
-        msg: 
-          - "{{ ('swarmManagers' in group_names) |ternary(manager_token, worker_token) }}"
-          - "{{ managers_list }}"
+    # - debug:
+    #     msg: 
+    #       - "{{ ('swarmManagers' in group_names) |ternary(manager_token, worker_token) }}"
+    #       - "{{ managers_list }}"
     - name: Add node to swarm
       community.docker.docker_swarm:
         state: join
@@ -125,155 +118,3 @@
           - source: /var/run/docker.sock
             target: /var/run/docker.sock
       when: 'inventory_hostname == random_manager'
-
-# - hosts: 127.0.0.1
-#   tasks:
-#     - name: Debug manager token
-#       debug:
-#         msg: "{{ manager_token }}"
-#     - name: Debug worker token
-#       debug:
-#         msg: "{{ worker_token }}"
-#     - name: Debug new managers list
-#       debug:
-#         msg: "{{ managers_list }}"
-
-# - name: Apply swarm
-#   hosts: swarmManagers:swarmWorkers
-#   gather_facts: False
-#   tasks:
-#     - name: Debug targeted token 
-#       debug:
-#         msg: "{{ 'swarmManagers' in group_names | ternary(manager_token, worker_token) }}"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # - community.docker.docker_swarm:
-    #     state: join
-    #     join_token: '{{ "swarmManagers" in group_names|ternary(manager_token, worker_token) }}'
-    #     remote_addrs: "{{ managers_list }}"
-      
-
-  
-    # - shell: docker info -f {{ '"' + '{{json .Swarm.NodeID }}' + '"' }}
-    #   register: node_id
-    # - name: Debug nodes in swarm
-    #   debug:
-    #     msg: "{{ node_id.stdout_lines[0] }}"
-
-
-    # - name: Debug token for node
-    #   debug:
-    #     msg: '{{ "swarmManagers" in group_names|ternary(manager_token, worker_token) }}'
-
-
-    # - block:
-    #   - name: Add node to swarm
-    #     community.docker.docker_swarm:
-    #       state: join
-    #       advertise_addr: 192.168.1.2
-    #       join_token: '{{ "swarmManagers" in group_names|ternary(manager_token, worker_token) }}'
-    #       remote_addrs: "{{ managers_list }}"
-    #   # this is the value when docker info returns "" as NodeID, meaning the node is not part of a swarm
-    #   when: 'node_id.stdout_lines[0] == "\"\""'
-
-
-# - hosts: testHosts
-#   - name: Initialize Swarm block
-#     block:
-#       -
-#     when: 'when: 'managers_list | length == 0'
-#   - name: Ensure managers and workers are in Swarm block:
-#     block:
-#       - name: Ensure manager is in swarm
-#         community.docker.docker_swarm:
-#           state: present
-#         register: manager_metadata
-#       - debug:
-#           msg: "{{ manager_metadata }}"
-#       - set_fact:
-#           manager_token: "{{ manager_metadata.swarm_facts.JoinTokens.Manager }}"
-#           worker_token: "{{ manager_metadata.swarm_facts.JoinTokens.Worker }}"
-#     when: 'when: 'managers_list | length > 0'
-
-
-# - hosts: testHosts
-#   become: true
-#   tasks:
-#     - name: Ensure jq is installed in managers
-#       package:
-#         name: jq
-#         state: present
-#     - name: Ensure swarm is initialized in manager
-#       community.docker.docker_swarm:
-#         state: present
-#       register: manager_metadata
-#     - debug:
-#         msg: "{{ manager_metadata }}"
-#     - set_fact:
-#         manager_token: "{{ manager_metadata.swarm_facts.JoinTokens.Manager }}"
-#         worker_token: "{{ manager_metadata.swarm_facts.JoinTokens.Worker }}"
-#     - shell: docker info -f {{ '"' + '{{json .Swarm.RemoteManagers }}' + '"' }} | jq '.[].Addr' | cut -d'"' -f 2
-#       register: managers_addresses
-
-# - hosts: testHosts
-#   become: true
-#   tasks:
-#     - debug:
-#         #msg: "{{ manager_token + '######' + worker_token }}"
-#         msg: "{{ managers_addresses }}"
-
-
-#     #- docker_host_info:
-#       #register: result
-#     #- debug:
-
