@@ -25,7 +25,7 @@
         #stack_conf: "{{ item.conf }}"
         stack_dir: "{{ item.dir }}"
         stack_status: "{{ item.status }}"
-        stack_name: "{{ stack_name }}"
+        stack_name: "{{ item.name }}"
         swarm: true
       with_items: "{{ stacks }}"
 #        stack_name: "{{ item.stack_name }}"
