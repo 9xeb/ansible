@@ -1,0 +1,37 @@
+# Required directories for volumes mounts
+# zeek-logs
+# zeek-spool
+# suricata-logs
+---
+- name: Push sshnfs configuration
+  import_playbook: push-sshnfs.yml
+
+- hosts: swarmManagers[0]
+  # hosts must be all so the conditional can pick the correct ones
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: Push {{ item.stack_name }} compose stack (project {{ item.project_name }}) in swarm mode
+      include_role:
+        name: 9xeb.push-compose
+#      when: "item.target in group_names"
+      #set_fact: 
+        #stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
+      vars:
+        # remote directory name
+        #project_name: "{{ item.project_name }}"
+        # location of the compose override in ../docker/
+        #stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
+        stack_conf: "{{ item.conf }}"
+        stack_dir: "{{ item.dir }}"
+        stack_status: "{{ item.status }}"
+        swarm: true
+      with_items: "{{ swarm_stacks }}"
+#        stack_name: "{{ item.stack_name }}"
+#        status: "{{ item.status }}"
+      #  roles:
+      #    - 9xeb.push-compose
+#      with_items: "{{ requested_stacks }}"
+#        - { project_name: purpleids, stack_name: network, target: 'networkHosts', status: present }
+#        - { project_name: purpleids, stack_name: analysis, target: 'analysisHosts', status: present }
+#        - { project_name: purpleids, stack_name: dvwa, target: 'analysisHosts', status: present }

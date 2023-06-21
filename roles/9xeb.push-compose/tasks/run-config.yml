@@ -16,4 +16,8 @@
     pull: yes
     state: "{{ stack_status }}"
     debug: yes
+  when: not swarm
 #    remove_volumes: "{{ remove_volumes }}"
+- name: Run docker compose stack in swarm
+  shell: docker stack deploy -c "{{ stack_conf }}" "{{ project_name }}"
+  when: swarm
