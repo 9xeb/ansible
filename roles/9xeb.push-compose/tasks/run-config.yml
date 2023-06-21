@@ -30,5 +30,5 @@
     - set_fact:
         stack_arguments: ''
     - name: Run docker compose stack in swarm
-      shell: docker stack deploy -c docker/{{ project_name }}/swarm.yml {{ project_name }}
+      shell: docker stack deploy -c docker/{{ project_name }}/swarm.yml {{ stack_name }}
   when: swarm
