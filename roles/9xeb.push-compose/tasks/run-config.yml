@@ -18,6 +18,15 @@
     debug: yes
   when: not swarm
 #    remove_volumes: "{{ remove_volumes }}"
-- name: Run docker compose stack in swarm
-  shell: docker stack deploy -c "{{ stack_conf }}" "{{ project_name }}"
+
+- block:
+    - set_fact:
+        stack_arguments: "{{ (stack_arguments | default('')) + ' -f ' + stack_item }}"
+      loop: "{{ stack_conf }}"
+      loop_control:
+        loop_var: stack_item
+    - name: Build single stack file from compose files
+      shell: docker-compose "{{ stack_conf }}" build > docker/{{ project_name }}/swarm.yml
+    - name: Run docker compose stack in swarm
+      shell: docker stack deploy -c docker/{{ project_name }}/swarm.yml "{{ project_name }}"
   when: swarm
