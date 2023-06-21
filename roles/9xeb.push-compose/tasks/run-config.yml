@@ -21,7 +21,7 @@
 
 - block:
     - set_fact:
-        stack_arguments: "{{ (stack_arguments | default('')) + ' -f ' + stack_item }}"
+        stack_arguments: "{{ (stack_arguments | default('')) + ' -f docker/' + stack_item }}"
       loop: "{{ stack_conf }}"
       loop_control:
         loop_var: stack_item
