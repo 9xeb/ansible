@@ -15,6 +15,12 @@
   loop: "{{ stack_conf }}"
   loop_control:
     loop_var: stack_item
+  when: not swarm
+- name: Push swarm stack file
+  copy:
+    src: "{{ stack_conf }}"
+    dest: docker/{{ project_name }}/{{ stack_conf }}
+  when: swarm
 #  with_items: "{{ stack_conf }}"
 #   notify: stop stack and remove volumes
 - name: Push targeted compose override directory
@@ -24,6 +30,7 @@
 #    dest: docker/{{ project_name }}/{{ stack_name }}
     src: "{{ stack_dir ~ '/' }}"
     dest: docker/{{ project_name }}/{{ stack_dir }}/
+  when: not swarm
 #  loop: "{{ stack_list }}"
 #- name: stop stack and remove volumes
 #  command:
