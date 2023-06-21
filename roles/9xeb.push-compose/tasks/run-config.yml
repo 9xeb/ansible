@@ -28,5 +28,5 @@
     - name: Build single stack file from compose files
       shell: docker-compose {{ stack_arguments }} build > docker/{{ project_name }}/swarm.yml
     - name: Run docker compose stack in swarm
-      shell: docker stack deploy -c docker/{{ project_name }}/swarm.yml "{{ project_name }}"
+      shell: docker stack deploy -c docker/{{ project_name }}/swarm.yml {{ project_name }}
   when: swarm
