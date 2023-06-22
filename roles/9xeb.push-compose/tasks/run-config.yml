@@ -26,9 +26,9 @@
       loop_control:
         loop_var: stack_item
     - name: Build single stack file from compose files
-      shell: docker-compose {{ stack_arguments }} config > docker/{{ project_name }}/swarm.yml
+      shell: docker-compose {{ stack_arguments }} config > docker/{{ stack_name }}-swarm.yml
     - set_fact:
         stack_arguments: ''
     - name: Run docker compose stack in swarm
-      shell: docker stack deploy -c docker/{{ project_name }}/swarm.yml {{ stack_name }}
+      shell: docker stack deploy -c docker/{{ stack_name }}-swarm.yml {{ stack_name }}
   when: swarm
