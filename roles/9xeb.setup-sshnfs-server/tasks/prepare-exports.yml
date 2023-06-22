@@ -8,7 +8,7 @@
     state: directory
 #    owner: root
 #    group: root
-    mode: '0740'
+#    mode: '0740'
   loop: "{{ docker_volumes }}"
 - name: Add unprivileged user for nfs via ssh tunneling purposes
   ansible.builtin.user:
