@@ -27,7 +27,7 @@
         stack_status: "{{ item.status }}"
         stack_name: "{{ item.name }}"
         swarm: true
-      with_items: "{{ stacks }}"
+      with_items: "{{ swarm_stacks }}"
 #        stack_name: "{{ item.stack_name }}"
 #        status: "{{ item.status }}"
       #  roles:

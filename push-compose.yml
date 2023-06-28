@@ -27,6 +27,7 @@
         stack_env: "{{ item.env }}"
         stack_status: "{{ item.status }}"
         stack_name: "{{ item.name }}"
+        swarm: false
       with_items: "{{ stacks }}"
 #        stack_name: "{{ item.stack_name }}"
 #        status: "{{ item.status }}"
