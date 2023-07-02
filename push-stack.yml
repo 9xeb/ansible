@@ -4,12 +4,16 @@
 # suricata-logs
 ---
 - name: Push sshnfs configuration
+  vars:
+    stacks: "{{ swarm_stacks }}"
   import_playbook: push-sshnfs.yml
 
 - hosts: swarmManagers[0]
   # hosts must be all so the conditional can pick the correct ones
   vars_files:
     - vars/main.yml
+  vars:
+    stacks: "{{ swarm_stacks }}"
   tasks:
     - name: Push {{ item.stack_name }} compose stack (project {{ item.project_name }}) in swarm mode
       include_role:
@@ -27,7 +31,7 @@
         stack_status: "{{ item.status }}"
         stack_name: "{{ item.name }}"
         swarm: true
-      with_items: "{{ swarm_stacks }}"
+      with_items: "{{ stacks }}"
 #        stack_name: "{{ item.stack_name }}"
 #        status: "{{ item.status }}"
       #  roles:
