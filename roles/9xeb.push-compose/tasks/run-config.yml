@@ -31,4 +31,8 @@
         stack_arguments: ''
     - name: Run docker compose stack in swarm
       shell: docker stack deploy -c docker/{{ stack_name }}-swarm.yml {{ stack_name }}
+      when: stack_status
+    - name: Run docker compose stack in swarm
+      shell: docker stack rm {{ stack_name }}
+      when: not stack_status
   when: swarm
