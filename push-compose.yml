@@ -4,12 +4,16 @@
 # suricata-logs
 ---
 - name: Push sshnfs configuration
+  vars:
+    stacks: "{{ manual_stacks }}"
   import_playbook: push-sshnfs.yml
 
 - hosts: all
   # hosts must be all so the conditional can pick the correct ones
   vars_files:
     - vars/main.yml
+  vars:
+    stacks: "{{ manual_stacks }}"
   tasks:
     - name: Push {{ item.stack_name }} compose stack (project {{ item.project_name }})
       include_role:
