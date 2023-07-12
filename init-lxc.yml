@@ -1,0 +1,25 @@
+# Required directories for volumes mounts
+# zeek-logs
+# zeek-spool
+# suricata-logs
+---
+- name: Setup lxc compute, storage and netmon units
+  hosts: clusterHosts
+  # at least two storage, two netmon, and three compute for HA
+  tasks:
+    - name: Ensure compute lxc unit
+      community.general.lxc_container:
+        name: test-container-lvm
+#        container_log: true
+        template: debian
+        state: started
+        backing_store: lvm
+        template_options: --release bookworm
+        container_command: |
+          apt-get update
+          apt-get install -y docker.io git
+
+#          echo 'hello world.' | tee /opt/started
+#          if [[ -f "/opt/started" ]]; then
+#              echo 'hello world.' | tee /opt/found-started
+#          fi
