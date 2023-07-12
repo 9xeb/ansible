@@ -16,16 +16,18 @@
         state: latest
     - name: Ensure compute lxc unit
       community.general.lxc_container:
-        name: test-container-lvm
+        name: compute
 #        container_log: true
         template: debian
         state: started
-        backing_store: lvm
+#        backing_store: lvm
         template_options: --release bookworm
         container_command: |
           apt-get update
           apt-get install -y docker.io git
-
+      register: lvm_container_info
+    - debug:
+        msg: "{{ lvm_container_info }}"
 #          echo 'hello world.' | tee /opt/started
 #          if [[ -f "/opt/started" ]]; then
 #              echo 'hello world.' | tee /opt/found-started
