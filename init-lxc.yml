@@ -1,8 +1,44 @@
 ---
 - name: Setup lxc compute, storage and netmon units
   hosts: clusterHosts
+  vars:
+    units:
+      storage:
+        ssh_port: 2222
+        port_mappings:
+          - enabled: no
+      compute:
+        ssh_port: 2223
+        port_mappings:
+          - port: 4789
+            proto: udp 
+            enabled: yes
+          - port: 7946
+            proto: tcp
+            enabled: yes
+          - port: 7946
+            proto: udp
+            enabled: yes
+          - port: 2377
+            proto: tcp
+            enabled: yes
+      netmon:
+        ssh_port: 2224
+        port_mappings:
+          - port: 443
+            proto: tcp
+            enabled: yes
+
   # at least two storage, two netmon, and three compute for HA
   tasks:
+    - name: Retrieve local user pubkey
+      shell: cat ~/.ssh/id_rsa.pub
+      register: ssh_pubkey
+      delegate_to: localhost
+      become: no
+    - debug:
+        msg: "{{ ssh_pubkey }}"
+
     - name: Ensure dependencies for lxc are satisfied
       package:
         name:
@@ -11,9 +47,11 @@
           - python3-lxc
         state: latest
 
-    - name: Ensure compute lxc unit is available
+    # - shell: lxc-ls -f | cut -d' ' -f 1
+    #   register: lxc_status
+    - name: Ensure lxc unit is available
       community.general.lxc_container:
-        name: compute
+        name: "{{ item.key }}"
 #        container_log: true
         template: debian
         state: started
@@ -21,95 +59,103 @@
         template_options: --release bookworm
         container_command: |
           apt-get update
-          apt-get install -y docker.io
-      register: compute_info
+          apt-get install -y openssh-server
+          sed "s/.*PasswordAuthentication.*/PasswordAuthentication no/g" sshd_config
+          systemctl reload sshd
+          mkdir /root/.ssh
+          echo {{ ssh_pubkey.stdout }} > /root/.ssh/authorized_keys
+      register: unit_info
+      loop: "{{ units | dict2items }}"
+      # when: item.key not in lxc_status.stdout_lines
+
+    - ansible.utils.update_fact:
+        updates:
+          - path: units.{{ item.lxc_container.name }}.address
+            value: "{{ item.lxc_container.ips[0] }}"
+      loop: "{{ unit_info.results }}"
+      register: updated_units
+    - set_fact:
+        port_mappings: "{{ port_mappings | default([]) + [{ 'address': item.0.value.address, 'port': item.1.port, 'proto': item.1.proto }] }}"
+      with_subelements:
+        - "{{ updated_units.results[-1].units | dict2items }}"
+        - value.port_mappings
+      when: item.1.enabled
+      #when: updated_units.results[-1].units.value.port_mappings is defined
     - debug:
-        msg: "{{ compute_info.lxc_container.ips }}"
-
-    - name: Ensure netmon lxc unit is available
-      community.general.lxc_container:
-        name: netmon
-#        container_log: true
-        template: debian
-        state: started
-#        backing_store: lvm
-        template_options: --release bookworm
-        container_command: |
-          apt-get update
-          apt-get install -y docker.io
-      register: netmon_info
+        var: updated_units.results[-1].units
     - debug:
-        msg: "{{ netmon_info.lxc_container.ips }}"
+        var: port_mappings
 
-    - name: Ensure storage lxc unit is available
-      community.general.lxc_container:
-        name: storage
-#        container_log: true
-        template: debian
-        state: started
-#        backing_store: lvm
-        template_options: --release bookworm
-        container_command: |
-          apt-get update
-          apt-get install -y nfs-kernel-server
-      register: storage_info
-    - debug:
-        msg: "{{ storage_info.lxc_container.ips }}"
+    - name: Accept forward to units' ips
+      ansible.builtin.iptables:
+        action: insert
+        chain: FORWARD
+        destination: "{{ item.value.address }}"
+        jump: ACCEPT
+      loop: "{{ updated_units.results[-1].units | dict2items }}"
 
-
-    - name: DNAT to netmon
+    # - name: Allow units' ssh ports
+    #   ansible.builtin.iptables:
+    #     chain: INPUT
+    #     in_interface: wg0
+    #     protocol: tcp
+    #     destination_port: "{{ item.value.ssh_port }}"
+    #     jump: ACCEPT
+    #     comment: Allow incoming traffic from port {{ item.value.ssh_port }} in wg0 interface
+    #   loop: "{{ updated_units.results[-1].units | dict2items }}"
+    - name: DNAT ssh ips for units
       ansible.builtin.iptables:
         table: nat
         chain: PREROUTING
         in_interface: wg0
         protocol: tcp
-        #match: tcp
-        destination_port: 443
+        match: tcp
+        destination_port: "{{ item.value.ssh_port }}"
         jump: DNAT
-        to_destination: "{{ netmon_info.lxc_container.ips[0] }}"
-        comment: Redirect 443 traffic to netmon
+        to_destination: "{{ item.value.address + ':22' }}"
+        comment: Redirect {{ item.value.ssh_port }} traffic to unit ({{ item.key }})
       become: yes
+      loop: "{{ updated_units.results[-1].units | dict2items }}"
+    # - name: Redirect ssh ports for units
+    #   ansible.builtin.iptables:
+    #     table: nat
+    #     chain: PREROUTING
+    #     #in_interface: wg0
+    #     protocol: tcp
+    #     match: tcp
+    #     destination_port: "{{ item.value.ssh_port }}"
+    #     destination: "{{ item.value.address }}"
+    #     jump: REDIRECT
+    #     to_ports: 22
+    #     comment: Redirect {{ item.value.ssh_port }} -> 22 traffic to unit ({{ item.key }})
+    #   become: yes
+    #   loop: "{{ updated_units.results[-1].units | dict2items }}"
 
-    - name: DNAT to storage
+    # - name: Allow unit services' ssh ports
+    #   ansible.builtin.iptables:
+    #     chain: INPUT
+    #     in_interface: wg0
+    #     protocol: "{{ item.proto }}"
+    #     match: "{{ item.proto }}"
+    #     destination_port: "{{ item.port }}"
+    #     jump: ACCEPT
+    #     comment: Allow incoming traffic from port {{ item.port }} in wg0 interface
+    #   loop: "{{ port_mappings }}"
+    - name: DNAT unit services
       ansible.builtin.iptables:
         table: nat
         chain: PREROUTING
         in_interface: wg0
-        protocol: tcp
-        #match: tcp
-        destination_port: 2222
+        protocol: "{{ item.proto }}"
+        match: "{{ item.proto }}"
+        destination_port: "{{ item.port }}"
         jump: DNAT
-        to_destination: "{{ storage_info.lxc_container.ips[0] }}"
-        comment: Redirect 2222 traffic to storage
+        to_destination: "{{ item.address }}"
+        comment: Redirect {{ item.port }} traffic to {{ item.address }}
       become: yes
+      loop: "{{ port_mappings }}"
 
-    - name: Port map to storage
-      ansible.builtin.iptables:
-        table: nat
-        chain: PREROUTING
-        #in_interface: wg0
-        protocol: tcp
-        #match: tcp
-        destination_port: 2222
-        destination: "{{ storage_info.lxc_container.ips[0] }}"
-        jump: REDIRECT
-        to_ports: 22
-        comment: Redirect 2222 -> 22 traffic to storage
-      become: yes
-
-    - name: DNAT to compute
-      ansible.builtin.iptables:
-        table: nat
-        chain: PREROUTING
-        in_interface: wg0
-        protocol: all
-        #match: tcp
-        jump: DNAT
-        to_destination: "{{ compute_info.lxc_container.ips[0] }}"
-        comment: Redirect all traffic to storage
-      become: yes
-
-# use lvm_container_info to extract main IP address; use that IP addr to setup targeted firewall forwarding rules on the node towards units, according to each the unit type
+# use lvm_container_info to extract main IP address; use that IP addr to setup targeted firewall forwarding rules on the node towards units, according to each unit type
 # traffic to be redirected without SNAT comes from wg0, nothing ever goes to the clearnet, except user traffic to and from compute nodes
 
 # consider using lvm insead of dir as fs source, for better enforcing storage limits
