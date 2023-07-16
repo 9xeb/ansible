@@ -1,6 +1,6 @@
 ---
 - name: Setup lxc compute, storage and netmon units
-  hosts: clusterHosts
+  hosts: unitsHosts
   vars:
     units:
       storage:
@@ -21,6 +21,19 @@
             enabled: yes
           - port: 2377
             proto: tcp
+            enabled: yes
+          # redirect all ports to compute, since this unit is where services reside
+          - port: 1:21
+            proto: tcp
+            enabled: yes
+          - port: 23:65535
+            proto: tcp
+            enabled: yes
+          - port: 1:21
+            proto: udp
+            enabled: yes
+          - port: 23:65535
+            proto: udp
             enabled: yes
       netmon:
         ssh_port: 2224
@@ -46,12 +59,19 @@
           - python3
           - python3-lxc
         state: latest
+    - name: Ensure br_netfilter kernel module is loaded on host
+      shell: modprobe br_netfilter
+    - name: Ensure wireguard is installed on host
+      package:
+        name:
+          - wireguard
+        state: latest
 
     # - shell: lxc-ls -f | cut -d' ' -f 1
     #   register: lxc_status
     - name: Ensure lxc unit is available
       community.general.lxc_container:
-        name: "{{ item.key }}"
+        name: "{{ item.key + '-' + inventory_hostname_short }}"
 #        container_log: true
         template: debian
         state: started
@@ -59,7 +79,7 @@
         template_options: --release bookworm
         container_command: |
           apt-get update
-          apt-get install -y openssh-server
+          apt-get install -y openssh-server python3
           sed "s/.*PasswordAuthentication.*/PasswordAuthentication no/g" sshd_config
           systemctl reload sshd
           mkdir /root/.ssh
@@ -70,7 +90,7 @@
 
     - ansible.utils.update_fact:
         updates:
-          - path: units.{{ item.lxc_container.name }}.address
+          - path: units.{{ item.lxc_container.name.split('-').0 }}.address
             value: "{{ item.lxc_container.ips[0] }}"
       loop: "{{ unit_info.results }}"
       register: updated_units
@@ -94,15 +114,6 @@
         jump: ACCEPT
       loop: "{{ updated_units.results[-1].units | dict2items }}"
 
-    # - name: Allow units' ssh ports
-    #   ansible.builtin.iptables:
-    #     chain: INPUT
-    #     in_interface: wg0
-    #     protocol: tcp
-    #     destination_port: "{{ item.value.ssh_port }}"
-    #     jump: ACCEPT
-    #     comment: Allow incoming traffic from port {{ item.value.ssh_port }} in wg0 interface
-    #   loop: "{{ updated_units.results[-1].units | dict2items }}"
     - name: DNAT ssh ips for units
       ansible.builtin.iptables:
         table: nat
@@ -116,31 +127,7 @@
         comment: Redirect {{ item.value.ssh_port }} traffic to unit ({{ item.key }})
       become: yes
       loop: "{{ updated_units.results[-1].units | dict2items }}"
-    # - name: Redirect ssh ports for units
-    #   ansible.builtin.iptables:
-    #     table: nat
-    #     chain: PREROUTING
-    #     #in_interface: wg0
-    #     protocol: tcp
-    #     match: tcp
-    #     destination_port: "{{ item.value.ssh_port }}"
-    #     destination: "{{ item.value.address }}"
-    #     jump: REDIRECT
-    #     to_ports: 22
-    #     comment: Redirect {{ item.value.ssh_port }} -> 22 traffic to unit ({{ item.key }})
-    #   become: yes
-    #   loop: "{{ updated_units.results[-1].units | dict2items }}"
 
-    # - name: Allow unit services' ssh ports
-    #   ansible.builtin.iptables:
-    #     chain: INPUT
-    #     in_interface: wg0
-    #     protocol: "{{ item.proto }}"
-    #     match: "{{ item.proto }}"
-    #     destination_port: "{{ item.port }}"
-    #     jump: ACCEPT
-    #     comment: Allow incoming traffic from port {{ item.port }} in wg0 interface
-    #   loop: "{{ port_mappings }}"
     - name: DNAT unit services
       ansible.builtin.iptables:
         table: nat

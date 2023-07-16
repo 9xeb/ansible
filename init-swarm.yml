@@ -1,9 +1,30 @@
 # set global variable once using the 'target self' trick
+
+- name: Push sshnfs configuration before swarm is updated (in case new nodes are being added)
+  import_playbook: push-sshnfs.yml
+
+
+
 - hosts: swarmManagers:swarmWorkers
+  vars_files:
+    - vars/main.yml
   tasks:
     - set_fact:
         # this is a global variable
         managers_list: []
+    - name: Ensure docker and python dependencies are installed
+      package:
+        name: 
+          - docker.io
+          - python3-requests
+          - python3-docker
+        state: present
+    - name: Ensure internal nameserver is set as resolver for swarm nodes
+      lineinfile:
+        path: /etc/resolv.conf
+        line: nameserver {{ item }}
+        insertbefore: BOF
+      loop: "{{ nameservers }}"
 
 # scroll through managers and collect list of managers
 - name: Fetch list of all available managers
