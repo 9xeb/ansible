@@ -1,0 +1,26 @@
+---
+- name: Ensure docker is installed
+  package:
+    name: docker.io
+    state: present
+- name: Copy initialization helper
+  copy:
+    src: netns-veth@.service
+    dst: /etc/systemd/system/netns-veth@.service
+- name: Template access helper
+  template:
+    src: netns-veth-access@.service.j2
+    dst: /etc/systemd/system/netns-veth-access@.service
+- file: 
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+- name: Copy service drop-in for docker
+  copy:
+    src: docker.conf
+    dst: /etc/systemd/system/docker.service.d/docker.conf
+- systemd:
+    daemon_reload: true
+- systemd:
+    name: docker
+    state: restarted
+

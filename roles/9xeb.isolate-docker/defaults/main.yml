@@ -1,0 +1,21 @@
+port_mappings:
+  - port: 4789
+    proto: udp
+    enabled: yes
+  - port: 7946
+    proto: tcp
+    enabled: yes
+  - port: 7946
+    proto: udp
+    enabled: yes
+  - port: 2377
+    proto: tcp
+    enabled: yes
+  - port: 23:65535
+    proto: udp
+    enabled: no
+
+veth_ip: 192.168.15.2
+veth_gateway: 192.168.15.1
+veth_netmask: 24
+veth_subnet: 192.168.15.0/24
