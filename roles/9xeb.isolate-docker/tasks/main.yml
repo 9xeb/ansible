@@ -50,7 +50,8 @@
     match: "{{ item.proto }}"
     destination_port: "{{ item.port }}"
     jump: DNAT
-    to_destination: "{{ item.address }}"
-    comment: Redirect {{ item.port }} traffic to {{ item.address }}
+    to_destination: "{{ veth_ip }}"
+    comment: Redirect {{ item.port }} traffic to "{{ veth_ip }}"
   become: yes
   loop: "{{ port_mappings }}"
+  when: item.enabled
