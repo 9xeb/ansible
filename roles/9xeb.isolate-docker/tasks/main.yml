@@ -39,7 +39,7 @@
     action: insert
     chain: FORWARD
     destination: "{{ veth_subnet }}"
-    in_interface: "{{ veth_name }}"
+    in_interface: wg0
     jump: ACCEPT
 
 - name: DNAT unit services coming from wireguard VPN
