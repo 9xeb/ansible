@@ -1,0 +1,4 @@
+- name: Isolate docker daemon in private network namespace
+  hosts: testDocker
+  roles:
+    - 9xeb.isolate-docker
