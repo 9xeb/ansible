@@ -3,6 +3,7 @@
   package:
     name: docker.io
     state: present
+
 - name: Copy initialization helper
   copy:
     src: netns-veth@.service
@@ -18,9 +19,38 @@
   copy:
     src: docker.conf
     dest: /etc/systemd/system/docker.service.d/docker.conf
+
 - systemd:
     daemon_reload: true
 - systemd:
     name: docker
     state: restarted
 
+- name: Accept output forward to network namespace ips
+  ansible.builtin.iptables:
+    action: insert
+    chain: FORWARD
+    source: "{{ veth_subnet }}"
+    in_interface: "{{ veth_name }}"
+    jump: ACCEPT
+
+- name: Accept input forward to network namespace ips
+  ansible.builtin.iptables:
+    action: insert
+    chain: FORWARD
+    destination: "{{ veth_subnet }}"
+    jump: ACCEPT
+
+- name: DNAT unit services coming from wireguard VPN
+  ansible.builtin.iptables:
+    table: nat
+    chain: PREROUTING
+    in_interface: wg0
+    protocol: "{{ item.proto }}"
+    match: "{{ item.proto }}"
+    destination_port: "{{ item.port }}"
+    jump: DNAT
+    to_destination: "{{ item.address }}"
+    comment: Redirect {{ item.port }} traffic to {{ item.address }}
+  become: yes
+  loop: "{{ port_mappings }}"

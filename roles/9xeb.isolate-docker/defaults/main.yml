@@ -19,3 +19,4 @@ veth_ip: 192.168.15.2
 veth_gateway: 192.168.15.1
 veth_netmask: 24
 veth_subnet: 192.168.15.0/24
+veth_name: veth-docker
