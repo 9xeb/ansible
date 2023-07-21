@@ -26,6 +26,7 @@ ExecStart=-/usr/bin/env ip netns exec %i ip link set lo up
 ExecStart=/usr/bin/env ip -n %i addr add {{ veth_ip }}/{{ veth_netmask }} dev veth-%i
 ExecStart=/usr/bin/env ip addr add {{ veth_gateway }}/{{ veth_netmask }} dev bridge-%i
 ExecStart=/usr/bin/env ip -n %i route add default via {{ veth_gateway }} dev veth-%i
+ExecStart=/usr/bin/env ip netns exec %i ethtool -K veth-%i tx off
 
 # setup forwarding and masquerading rules
 ExecStart=/usr/bin/env iptables -t nat -I POSTROUTING -s {{ veth_subnet }} ! -o bridge-%i -j MASQUERADE

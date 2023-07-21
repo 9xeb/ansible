@@ -1,7 +1,9 @@
 ---
-- name: Ensure docker is installed
+- name: Ensure docker and ethtool are installed
   package:
-    name: docker.io
+    name: 
+      - docker.io
+      - ethtool
     state: present
 
 - name: Copy initialization helper
