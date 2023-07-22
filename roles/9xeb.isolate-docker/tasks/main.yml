@@ -24,12 +24,13 @@
 
 - systemd:
     daemon_reload: true
-- systemd:
-    name: docker
-    state: stopped
-- systemd:
-    name: docker
-    state: started
+- shell: systemctl stop docker && systemctl start docker
+# - systemd:
+#     name: docker
+#     state: stopped
+# - systemd:
+#     name: docker
+#     state: started
 
 - name: Accept output forward to network namespace ips
   ansible.builtin.iptables:
