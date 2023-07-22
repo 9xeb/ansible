@@ -1,3 +1,5 @@
+- systemd:
+    daemon_reload: true
 - name: enable and start sshnfs-tunnel
   systemd:
     daemon_reload: yes
