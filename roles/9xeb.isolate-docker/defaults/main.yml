@@ -11,6 +11,10 @@ port_mappings:
   - port: 2377
     proto: tcp
     enabled: yes
+  # swarmpit port
+  - port: 888
+    proto: tcp
+    enabled: yes
   # service ports that can be exposed by cluster nodes
   - port: 8081:65535
     proto: tcp
