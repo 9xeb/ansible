@@ -26,7 +26,10 @@
     daemon_reload: true
 - systemd:
     name: docker
-    state: restarted
+    state: stopped
+- systemd:
+    name: docker
+    state: started
 
 - name: Accept output forward to network namespace ips
   ansible.builtin.iptables:
