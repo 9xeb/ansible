@@ -1,7 +1,7 @@
 [Unit]
 Description=AutoSSH tunneling NFS to local port (%i)
 #After=network-online.target
-After=multi-user.target
+After=multi-user.target docker.service
 
 [Service]
 Type=simple

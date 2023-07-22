@@ -21,6 +21,13 @@
   copy:
     src: docker.conf
     dest: /etc/systemd/system/docker.service.d/docker.conf
+- file: 
+    path: /etc/systemd/system/autossh-nfs-tunnel@.service.d
+    state: directory
+- name: Copy service drop-in for autossh-nfs-tunnel
+  copy:
+    src: autossh-nfs-tunnel@.conf
+    dest: /etc/systemd/system/autossh-nfs-tunnel@.service.d/autossh-nfs-tunnel@.conf
 
 - systemd:
     daemon_reload: true
