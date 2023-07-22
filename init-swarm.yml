@@ -1,5 +1,8 @@
 # set global variable once using the 'target self' trick
 
+- name: Setup isolated docker hosts
+  import_playbook: isolate-docker.yml
+
 - name: Push sshnfs configuration before swarm is updated (in case new nodes are being added)
   import_playbook: push-sshnfs.yml
 
@@ -63,9 +66,18 @@
       - name: Initialize Swarm in original manager
         community.docker.docker_swarm:
           state: present
-        register: manager_metadata
+        register: manager_metadata_plain
+        when: "'isolatedDockerHosts' not in group_names"
+      - name: Initialize Swarm in original manager (isolated)
+        community.docker.docker_swarm:
+          state: present
+          advertise_addr: ansible_facts.wg0.ipv4.address
+        register: manager_metadata_isolated
+        when: "'isolatedDockerHosts' in group_names"
       # - debug:
       #     msg: "{{ manager_metadata }}"   
+      - set_fact:
+          manager_metadata: "{{ manager_metadata_isolated if manager_metadata_isolated.stdout is defined else manager_metadata_plain }}"
       - name: Fetch original manager's address
         shell: docker info -f {{ '"' + '{{json .Swarm.RemoteManagers }}' + '"' }} | jq '.[].Addr' | cut -d'"' -f 2
         register: manager_report
@@ -81,7 +93,16 @@
     - name: Initialize Swarm in original manager
       community.docker.docker_swarm:
         state: present
-      register: manager_metadata
+      register: manager_metadata_plain
+      when: "'isolatedDockerHosts' not in group_names"
+    - name: Initialize Swarm in original manager (isolated)
+      community.docker.docker_swarm:
+        state: present
+        advertise_addr: ansible_facts.wg0.ipv4.address
+      register: manager_metadata_isolated
+      when: "'isolatedDockerHosts' in group_names"
+    - set_fact:
+        manager_metadata: "{{ manager_metadata_isolated if manager_metadata_isolated.stdout is defined else manager_metadata_plain }}"
     - name: Fetch original manager's address
       shell: docker info -f {{ '"' + '{{json .Swarm.RemoteManagers }}' + '"' }} | jq '.[].Addr' | cut -d'"' -f 2
       register: manager_report
@@ -115,6 +136,14 @@
         state: join
         join_token: "{{ ('swarmManagers' in group_names) |ternary(manager_token, worker_token) }}"
         remote_addrs: "{{ managers_list }}"
+      when: "'isolatedDockerHosts' not in group_names"
+    - name: Add node to swarm (isolated)
+      community.docker.docker_swarm:
+        state: join
+        join_token: "{{ ('swarmManagers' in group_names) |ternary(manager_token, worker_token) }}"
+        remote_addrs: "{{ managers_list }}"
+        advertise_addr: ansible_facts.wg0.ipv4.address
+      when: "'isolatedDockerHosts' in group_names"
 
 - name: Deploy swarmpit to manager nodes
   hosts: swarmManagers
