@@ -11,9 +11,13 @@ port_mappings:
   - port: 2377
     proto: tcp
     enabled: yes
-  - port: 23:65535
+  # service ports that can be exposed by cluster nodes
+  - port: 8081:65535
+    proto: tcp
+    enabled: yes
+  - port: 8081:65535
     proto: udp
-    enabled: no
+    enabled: yes
 
 veth_ip: 192.168.15.2
 veth_gateway: 192.168.15.1
