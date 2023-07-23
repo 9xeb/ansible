@@ -15,11 +15,19 @@ port_mappings:
   - port: 888
     proto: tcp
     enabled: yes
-  # service ports that can be exposed by cluster nodes
-  - port: 8081:65535
+  # pihole dns port
+  - port: 53
     proto: tcp
     enabled: yes
-  - port: 8081:65535
+  # pihole dns port
+  - port: 53
+    proto: udp
+    enabled: yes
+  # service ports that can be exposed by cluster nodes
+  - port: 8080:65535
+    proto: tcp
+    enabled: yes
+  - port: 8080:65535
     proto: udp
     enabled: yes
 
