@@ -53,6 +53,7 @@
         path: "{{ export_dir ~ '/' ~ item }}"
         state: directory
       loop: "{{ docker_volumes }}"
+      when: 'docker_volumes is defined'
     - name: Add unprivileged user for nfs via ssh tunneling purposes
       ansible.builtin.user:
         name: "{{ ssh_tunneling_user }}"

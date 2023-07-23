@@ -3,9 +3,8 @@
 - name: Setup isolated docker hosts
   import_playbook: isolate-docker.yml
 
-- name: Push sshnfs configuration before swarm is updated (in case new nodes are being added)
-  import_playbook: push-sshnfs.yml
-
+#- name: Push sshnfs configuration before swarm is updated (in case new nodes are being added)
+  #import_playbook: push-sshnfs.yml
 
 
 - hosts: swarmManagers:swarmWorkers
@@ -144,27 +143,30 @@
         remote_addrs: "{{ managers_list }}"
         advertise_addr: ansible_facts.wg0.ipv4.address
       when: "'isolatedDockerHosts' in group_names"
+    - debug:
+        var: ansible_facts.wg0.ipv4.address
+      when: "'isolatedDockerHosts' in group_names"
 
-- name: Deploy swarmpit to manager nodes
-  hosts: swarmManagers
-  vars:
-    random_manager: "{{ groups['swarmManagers'] | random }}"
-  tasks:
-    - community.docker.docker_swarm_service:
-        name: swarmpit
-        image: swarmpit/install:1.9
-        placement:
-          constraints:
-            - node.role == manager
-        replicas: 1
-        restart_config:
-          condition: none
-        env:
-          INTERACTIVE: '0'
-          APP_PORT: '888'
-          ADMIN_USERNAME: 'swarmpit'
-          ADMIN_PASSWORD: '{{ swarmpit_password }}'
-        mounts:
-          - source: /var/run/docker.sock
-            target: /var/run/docker.sock
-      when: 'inventory_hostname == random_manager'
+# - name: Deploy swarmpit to manager nodes
+#   hosts: swarmManagers
+#   vars:
+#     random_manager: "{{ groups['swarmManagers'] | random }}"
+#   tasks:
+#     - community.docker.docker_swarm_service:
+#         name: swarmpit
+#         image: swarmpit/install:1.9
+#         placement:
+#           constraints:
+#             - node.role == manager
+#         replicas: 1
+#         restart_config:
+#           condition: none
+#         env:
+#           INTERACTIVE: '0'
+#           APP_PORT: '888'
+#           ADMIN_USERNAME: 'swarmpit'
+#           ADMIN_PASSWORD: '{{ swarmpit_password }}'
+#         mounts:
+#           - source: /var/run/docker.sock
+#             target: /var/run/docker.sock
+#       when: 'inventory_hostname == random_manager'

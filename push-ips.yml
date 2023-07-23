@@ -68,6 +68,6 @@
         #crowdsec_lapi_url: "{{ crowdsec_lapi_url }}"
       with_items: "{{ crowdsec_bouncers_keys | dict2items }}"
       # when condition below is disabled for now, a single API key for everybody is used because of SNAT within the docker swarm overlay networks
-      #when: "item.key == 'bouncer_key_' + inventory_hostname_short"
+      when: "item.key == 'bouncer_key_' + inventory_hostname_short"
 
 
