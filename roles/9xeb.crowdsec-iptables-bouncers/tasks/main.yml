@@ -17,5 +17,5 @@
       systemd:
         name: crowdsec-firewall-bouncer-iptables
         state: restarted
-        enabled: true        
+        enabled: true
   become: true

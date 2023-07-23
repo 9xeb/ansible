@@ -13,7 +13,10 @@
     - vars/main.yml
   tasks:
     - name: Ensure bouncers api tokens docker secrets exist
-      shell: printf "{{ item.value }}" | docker secret create {{ item.key }}  -
+      community.docker.docker_secret:
+        name: "{{ item.key }}"
+        data: "{{ item.value }}"
+        state: present
       with_items: "{{ crowdsec_bouncers_keys | dict2items }}"
 
 # run crowdsec only from swarm_stacks entries
