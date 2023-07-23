@@ -15,7 +15,7 @@
         dest: /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
     - name: Restart bouncer service
       systemd:
-        name: crowdsec-firewall-bouncer-iptables
+        name: crowdsec-firewall-bouncer
         state: restarted
         enabled: true
   become: true
