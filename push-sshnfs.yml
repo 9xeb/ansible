@@ -36,7 +36,7 @@
     - name: Ensure nfs-kernel-server package is available
       package:
         name: nfs-kernel-server
-        status: present
+        state: present
 
     # push-pubkeys
     - name: Copy sshClients pubkeys to target authorized keys

@@ -13,7 +13,7 @@
     - vars/main.yml
   tasks:
     - name: Ensure bouncers api tokens docker secrets exist
-      shell: printf "{{ item.value }}" | docker secret create {{ item.key }} 
+      shell: printf "{{ item.value }}" | docker secret create {{ item.key }}  -
       with_items: "{{ crowdsec_bouncers_keys | dict2items }}"
 
 # run crowdsec only from swarm_stacks entries
@@ -41,7 +41,7 @@
         name: 9xeb.crowdsec-iptables-bouncers
       vars:
         crowdsec_bouncer_api_key: "{{ item.value }}"
-        crowdsec_lapi_url: "{{ crowdsec_lapi_url }}"
+        #crowdsec_lapi_url: "{{ crowdsec_lapi_url }}"
       with_items: "{{ crowdsec_bouncers_keys | dict2items }}"
       when: "item.key == 'BOUNCER_KEY_' + inventory_hostname_short"
 

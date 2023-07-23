@@ -3,14 +3,18 @@
 # wants crowdsec_lapi_url and crowdsec_bouncer_api_key vars
 - name: Ensure crowdsec-iptables-bouncer is installed
   block:
-    - shell: curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | bash
-    - package:
+    - name: Import crowdsec mirrors
+      shell: curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | bash
+    - name: Ensure crowdsec-firewall-bouncer-iptables is installed
+      package:
         name: crowdsec-firewall-bouncer-iptables
         state: present
-    - template:
+    - name: Update bouncer's configuration to point to proper LAPI
+      template:
         src: crowdsec-firewall-bouncer.yaml.j2
         dest: /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
-    - systemd:
+    - name: Restart bouncer service
+      systemd:
         name: crowdsec-firewall-bouncer-iptables
         state: restarted
         enabled: true        
