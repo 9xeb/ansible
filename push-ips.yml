@@ -20,25 +20,27 @@
       with_items: "{{ crowdsec_bouncers_keys | dict2items }}"
 
 # run crowdsec only from swarm_stacks entries
-# - hosts: swarmManagers[0]
-#   vars_files:
-#     - vars/main.yml
-#   vars:
-#     stacks: "{{ swarm_stacks }}"
-#   tasks:
-#     - name: Push crowdsec compose stack to swarm
-#       include_role:
-#         name: 9xeb.push-compose
-#       vars:
-#         stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
-#         stack_dir: "{{ item.dir }}"
-#         stack_status: "{{ item.status }}"
-#         stack_name: "{{ item.name }}"
-#         swarm: true
-#       with_items: "{{ stacks }}"
-#       when: "item.name == 'crowdsec'"
+- hosts: swarmManagers[0]
+  vars_files:
+    - vars/main.yml
+  vars:
+    stacks: "{{ swarm_stacks }}"
+  tasks:
+    - name: Push crowdsec compose stack to swarm
+      include_role:
+        name: 9xeb.push-compose
+      vars:
+        stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
+        stack_dir: "{{ item.dir }}"
+        stack_status: "{{ item.status }}"
+        stack_name: "{{ item.name }}"
+        swarm: true
+      with_items: "{{ stacks }}"
+      when: "item.name == 'crowdsec'"
 
 - hosts: dockerHosts
+  vars_files:
+    - vars/main.yml
   tasks:
     - include_role:
         name: 9xeb.crowdsec-iptables-bouncers
@@ -46,6 +48,6 @@
         crowdsec_bouncer_api_key: "{{ item.value }}"
         #crowdsec_lapi_url: "{{ crowdsec_lapi_url }}"
       with_items: "{{ crowdsec_bouncers_keys | dict2items }}"
-      when: "item.key == 'BOUNCER_KEY_' + inventory_hostname_short"
+      when: "item.key == 'bouncer_key_' + inventory_hostname_short"
 
 
