@@ -70,7 +70,7 @@
       - name: Initialize Swarm in original manager (isolated)
         community.docker.docker_swarm:
           state: present
-          advertise_addr: ansible_facts.wg0.ipv4.address
+          advertise_addr: "{{ ansible_facts.wg0.ipv4.address }}"
         register: manager_metadata_isolated
         when: "'isolatedDockerHosts' in group_names"
       # - debug:
@@ -97,7 +97,7 @@
     - name: Initialize Swarm in original manager (isolated)
       community.docker.docker_swarm:
         state: present
-        advertise_addr: ansible_facts.wg0.ipv4.address
+        advertise_addr: "{{ ansible_facts.wg0.ipv4.address }}"
       register: manager_metadata_isolated
       when: "'isolatedDockerHosts' in group_names"
     - set_fact:
@@ -141,10 +141,11 @@
         state: join
         join_token: "{{ ('swarmManagers' in group_names) |ternary(manager_token, worker_token) }}"
         remote_addrs: "{{ managers_list }}"
-        advertise_addr: ansible_facts.wg0.ipv4.address
+        advertise_addr: "{{ ansible_facts.wg0.ipv4.address }}"
+      register: join_results
       when: "'isolatedDockerHosts' in group_names"
     - debug:
-        var: ansible_facts.wg0.ipv4.address
+        var: join_results
       when: "'isolatedDockerHosts' in group_names"
 
 # - name: Deploy swarmpit to manager nodes
