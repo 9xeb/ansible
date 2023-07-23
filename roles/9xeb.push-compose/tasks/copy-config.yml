@@ -9,7 +9,7 @@
 #    dest: docker/{{ project_name }}/docker-compose-ansible.yml
 #  register: main_compose
 - name: Push compose files
-  copy:
+  template:
     src: "{{ stack_item }}"
     dest: docker/{{ project_name }}/{{ stack_item }}
   loop: "{{ stack_conf }}"
