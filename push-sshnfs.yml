@@ -34,9 +34,9 @@
     ssh_user: "{{ ssh_tunneling_user }}"
   tasks:
     - name: Ensure nfs-kernel-server package is available
-        package:
-          name: nfs-kernel-server
-          status: present
+      package:
+        name: nfs-kernel-server
+        status: present
 
     # push-pubkeys
     - name: Copy sshClients pubkeys to target authorized keys
