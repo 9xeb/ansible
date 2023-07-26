@@ -16,6 +16,6 @@
 - name: Ensuring nfs export is present
   lineinfile:
     path: /etc/exports
-    line: "{{ export_dir ~ ' localhost(rw,sync,wdelay,no_subtree_check,no_root_squash,insecure)' }}"
+    line: "{{ export_dir ~ ' localhost(rw,async,wdelay,no_subtree_check,no_root_squash,insecure)' }}"
 - name: Refresh active exports
   command: exportfs -arv
