@@ -1,6 +1,0 @@
-export_dir: /srv/swarm/docker/volumes
-docker_volumes:
-  - volume1
-  - volume2
-  - volume3
-ssh_tunneling_user: tunneler
