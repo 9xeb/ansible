@@ -4,10 +4,11 @@
 - name: Initialize docker swarm cluster
   import_playbook: init-swarm.yml
 
-- name: Deploy IPS solutions in cluster
-  import_playbook: push-ips.yml
-
 - name: Push sshnfs configuration on all nodes
   vars:
     stacks: "{{ manual_stacks }}"
   import_playbook: push-sshnfs.yml
+
+- name: Deploy IPS solutions in cluster
+  import_playbook: push-ips.yml
+
