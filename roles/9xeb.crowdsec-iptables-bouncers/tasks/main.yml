@@ -1,5 +1,8 @@
 ---
 
+- name: Check if falco package is installed
+  package_facts:
+    manager: auto
 # wants crowdsec_lapi_url and crowdsec_bouncer_api_key vars
 - name: Ensure crowdsec-iptables-bouncer is installed
   block:
@@ -9,13 +12,18 @@
       package:
         name: crowdsec-firewall-bouncer-iptables
         state: present
-    - name: Update bouncer's configuration to point to proper LAPI
-      template:
-        src: crowdsec-firewall-bouncer.yaml.j2
-        dest: /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
-    - name: Restart bouncer service
-      systemd:
-        name: crowdsec-firewall-bouncer
-        state: restarted
-        enabled: true
+  when: "'crowdsec-iptables-bouncer' not in ansible_facts.packages"
+  become: true
+
+- name: Update bouncer's configuration to point to proper LAPI
+  template:
+    src: crowdsec-firewall-bouncer.yaml.j2
+    dest: /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+  become: true
+
+- name: Restart bouncer service
+  systemd:
+    name: crowdsec-firewall-bouncer
+    state: restarted
+    enabled: true
   become: true
