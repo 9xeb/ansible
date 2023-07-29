@@ -34,17 +34,22 @@
         - name: Install kernel headers
           block:
             - package:
-                name: linux-headers-amd64
+                name: linux-headers-{{ ansible_facts.kernel }}
                 state: present
           rescue:
             - block:
                 - package:
-                  name: linux-headers-arm64
-                  state: present
+                    name: linux-headers-amd64
+                    state: present
               rescue:
-                - package:
-                  name: raspberrypi-kernel-headers
-                  state: present
+                - block:
+                    - package:
+                        name: linux-headers-arm64
+                        state: present
+                  rescue:
+                    - package:
+                        name: raspberrypi-kernel-headers
+                        state: present
 
         - apt:
             update_cache: yes
