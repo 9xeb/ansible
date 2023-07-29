@@ -21,9 +21,15 @@
     dest: /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
   become: true
 
-- name: Restart bouncer service
+- name: Stop bouncer service
   systemd:
     name: crowdsec-firewall-bouncer
-    state: restarted
+    state: stopped
+    enabled: true
+  become: true
+- name: Start bouncer service
+  systemd:
+    name: crowdsec-firewall-bouncer
+    state: started
     enabled: true
   become: true
