@@ -14,7 +14,7 @@
     #     enabled: true
     #   check_mode: true
     #   register: falco_bpf_status
-      when: "'falco' in ansible_facts.packages"
+    #   when: "'falco' in ansible_facts.packages"
     - name: Install and run Falco
       block:
         - name: Install Falco components and dependencies
