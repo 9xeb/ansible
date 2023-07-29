@@ -39,16 +39,16 @@
           rescue:
             - block:
                 - package:
-                    name: linux-headers-amd64
+                    name: raspberrypi-kernel-headers
                     state: present
               rescue:
                 - block:
                     - package:
-                        name: linux-headers-arm64
+                        name: linux-headers-amd64
                         state: present
                   rescue:
                     - package:
-                        name: raspberrypi-kernel-headers
+                        name: linux-headers-arm64
                         state: present
 
         - apt:
