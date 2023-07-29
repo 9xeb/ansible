@@ -25,6 +25,6 @@
         #stack_env: "{{ item.env }}"
         stack_status: "{{ item.status }}"
         stack_name: "{{ item.name }}"
-        swarm: false
+        swarm: true
       with_items: "{{ stacks }}"
       when: "item.name == 'falco'"
