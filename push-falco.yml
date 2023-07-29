@@ -2,7 +2,7 @@
   import_playbook: ensure-falco-bpf.yml
 
 - name: Run falco swarm stack
-  hosts: dockerHosts
+  hosts: swarmManagers[0]
   # hosts must be all so the conditional can pick the correct ones
   vars_files:
     - vars/main.yml
