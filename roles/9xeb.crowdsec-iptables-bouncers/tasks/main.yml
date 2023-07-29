@@ -12,7 +12,7 @@
       package:
         name: crowdsec-firewall-bouncer-iptables
         state: present
-  when: "'crowdsec-iptables-bouncer' not in ansible_facts.packages"
+  when: "'crowdsec-firewall-bouncer-iptables' not in ansible_facts.packages"
   become: true
 
 - name: Update bouncer's configuration to point to proper LAPI
