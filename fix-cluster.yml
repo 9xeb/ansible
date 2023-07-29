@@ -1,7 +1,9 @@
-- name: Setup unattended upgrades
-  package:
-    name: unattended-upgrades
-    state: present
+- hosts: dockerHosts
+  tasks:
+    - name: Setup unattended upgrades
+      package:
+        name: unattended-upgrades
+        state: present
 
 - name: Isolate docker where required
   import_playbook: isolate-docker.yml
