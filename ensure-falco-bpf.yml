@@ -17,9 +17,51 @@
     #   when: "'falco' in ansible_facts.packages"
     - name: Install and run Falco
       block:
-        - name: Install Falco components and dependencies
-          shell:  curl https://falco.org/script/install | bash
-        - name: Ensure bpf probes are available
+        - name: Delete falcosecurity GPG key
+          file:
+            path: /usr/share/keyrings/falco-archive-keyring.gpg
+            state: absent
+        - name: Trust the falcosecurity GPG key
+          shell: |
+            curl -fsSL https://falco.org/repo/falcosecurity-packages.asc | \
+            gpg --dearmor -o /usr/share/keyrings/falco-archive-keyring.gpg && \
+            apt update
+        - name: Configure the apt repository
+          shell: |
+            cat >/etc/apt/sources.list.d/falcosecurity.list <<EOF
+            deb [signed-by=/usr/share/keyrings/falco-archive-keyring.gpg] https://download.falco.org/packages/deb stable main
+            EOF
+        - name: Install kernel headers
+          block:
+            - package:
+                name: linux-headers-amd64
+                state: present
+          rescue:
+            - block:
+                - package:
+                  name: linux-headers-arm64
+                  state: present
+              rescue:
+                - package:
+                  name: raspberrypi-kernel-headers
+                  state: present
+
+        - apt:
+            update_cache: yes
+
+        - name: Install dependencies and falco
+          package:
+            name:
+              - apt-transport-https
+              - dkms
+              - make
+              - clang
+              - llvm
+              - falco
+            state: present
+        # - name: Install Falco components and dependencies
+        #   shell:  curl https://falco.org/script/install | bash
+        - name: Ensure bpf probe is built and available
           shell: falco-driver-loader bpf
       #   - name: Restart falco-bpf service
       #     systemd:
