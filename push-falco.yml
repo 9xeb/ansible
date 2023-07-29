@@ -22,7 +22,7 @@
         #stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
         stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
         stack_dir: "{{ item.dir }}"
-        stack_env: "{{ item.env }}"
+        #stack_env: "{{ item.env }}"
         stack_status: "{{ item.status }}"
         stack_name: "{{ item.name }}"
         swarm: false
