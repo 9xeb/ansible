@@ -17,6 +17,11 @@ For testing and debugging, just log into your host and start/stop/edit compose l
 ansible-playbook -i path/to/inventory -b PLAYBOOK.yml -e@path/to/vault --ask-vault-pass
 ```
 
+# Current playbook chains
+ - push-compose and push-stack depend on push-sshnfs
+ - push-security depends on push-sshnf, push-crowdsec and push-falco, and it is a special case of push-stack
+ - push-backups is yet to be well defined
+
 # Future additions
 - Move all these below to issues
 - Docker swarm managers and workers setup, and pushing configurations

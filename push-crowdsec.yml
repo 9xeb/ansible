@@ -3,13 +3,14 @@
 # crowdsec iptables bouncers are installed with templated config on each swarm node (outside of the swarm for the sake of simplicity)
 
 ---
-- name: Push sshnfs configuration
-  vars:
-    stacks: "{{ manual_stacks }}"
-  import_playbook: push-sshnfs.yml
+# - name: Push sshnfs configuration
+#   vars:
+#     stacks: "{{ swarm_infra_stacks }}"
+#   import_playbook: push-sshnfs.yml
 
 # stop crowdsec only from swarm_infra_stacks entries
-- hosts: swarmManagers[0]
+- name: Stop crowdsec LAPI
+  hosts: swarmManagers[0]
   vars_files:
     - vars/main.yml
   vars:
@@ -27,7 +28,8 @@
       with_items: "{{ stacks }}"
       when: "item.name == 'crowdsec'"
 
-- hosts: swarmManagers[0]
+- name: Update secrets for crowdsec LAPI
+  hosts: swarmManagers[0]
   vars_files:
     - vars/main.yml
   tasks:
@@ -39,7 +41,8 @@
       with_items: "{{ crowdsec_bouncers_keys | dict2items }}"
 
 # run crowdsec only from swarm_infra_stacks entries
-- hosts: swarmManagers[0]
+- name: Start crowdsec LAPI
+  hosts: swarmManagers[0]
   vars_files:
     - vars/main.yml
   vars:
@@ -57,7 +60,8 @@
       with_items: "{{ stacks }}"
       when: "item.name == 'crowdsec'"
 
-- hosts: dockerHosts
+- name: Start crowdsec bouncers
+  hosts: dockerHosts
   vars_files:
     - vars/main.yml
   tasks:

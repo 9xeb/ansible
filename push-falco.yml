@@ -1,6 +1,8 @@
-- import_playbook: ensure-falco-bpf.yml
+- name: Ensure falco modules are present
+  import_playbook: ensure-falco-bpf.yml
 
-- hosts: dockerHosts
+- name: Run falco swarm stack
+  hosts: dockerHosts
   # hosts must be all so the conditional can pick the correct ones
   vars_files:
     - vars/main.yml
