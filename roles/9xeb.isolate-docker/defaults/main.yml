@@ -30,16 +30,16 @@ port_mappings:
   # - port: 8080:65535
   #   proto: udp
   #   enabled: yes
-  - port: 1-21
+  - port: 1:21
     proto: tcp
     enabled: yes
-  - port: 23-65535
+  - port: 23:65535
     proto: tcp
     enabled: yes
-  - port: 1-21
+  - port: 1:21
     proto: udp
     enabled: yes
-  - port: 23-65535
+  - port: 23:65535
     proto: udp
     enabled: yes
 
