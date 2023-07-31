@@ -1,33 +1,45 @@
 port_mappings:
-  - port: 4789
+  # - port: 4789
+  #   proto: udp
+  #   enabled: yes
+  # - port: 7946
+  #   proto: tcp
+  #   enabled: yes
+  # - port: 7946
+  #   proto: udp
+  #   enabled: yes
+  # - port: 2377
+  #   proto: tcp
+  #   enabled: yes
+  # # swarmpit port
+  # - port: 888
+  #   proto: tcp
+  #   enabled: yes
+  # # pihole dns port
+  # - port: 53
+  #   proto: tcp
+  #   enabled: yes
+  # # pihole dns port
+  # - port: 53
+  #   proto: udp
+  #   enabled: yes
+  # # service ports that can be exposed by cluster nodes
+  # - port: 8080:65535
+  #   proto: tcp
+  #   enabled: yes
+  # - port: 8080:65535
+  #   proto: udp
+  #   enabled: yes
+  - port: 1-21
+    proto: tcp
+    enabled: yes
+  - port: 23-65535
+    proto: tcp
+    enabled: yes
+  - port: 1-21
     proto: udp
     enabled: yes
-  - port: 7946
-    proto: tcp
-    enabled: yes
-  - port: 7946
-    proto: udp
-    enabled: yes
-  - port: 2377
-    proto: tcp
-    enabled: yes
-  # swarmpit port
-  - port: 888
-    proto: tcp
-    enabled: yes
-  # pihole dns port
-  - port: 53
-    proto: tcp
-    enabled: yes
-  # pihole dns port
-  - port: 53
-    proto: udp
-    enabled: yes
-  # service ports that can be exposed by cluster nodes
-  - port: 8080:65535
-    proto: tcp
-    enabled: yes
-  - port: 8080:65535
+  - port: 23-65535
     proto: udp
     enabled: yes
 
