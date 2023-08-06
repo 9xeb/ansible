@@ -14,4 +14,5 @@
         #stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
         build_dir: "{{ item.dir }}"
         build_name: "{{ item.name }}"
+        build_tag: "{{ item.tag }}"
       with_items: "{{ builds }}"
