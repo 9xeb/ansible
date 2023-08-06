@@ -1,0 +1,16 @@
+- name: Push targeted compose override directory
+  copy:
+#    src: "{{ stack_name }}"
+#    src: "{{ item }}"
+#    dest: docker/{{ project_name }}/{{ stack_name }}
+    src: "{{ build_dir ~ '/' }}"
+    dest: docker/{{ project_name }}/{{ build_dir }}/
+
+- name: Build an image and push it to a private repo
+  community.docker.docker_image:
+    build:
+      path: docker/{{ project_name }}/{{ build_dir }}
+    name: {{ registry_name }}/{{ build_name }}
+    tag: "{{ build_tag }}"
+    push: true
+    source: build

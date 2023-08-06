@@ -1,0 +1,17 @@
+- hosts: builderHosts
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: Build custom images and push them to private registry
+      include_role:
+        name: 9xeb.push-images
+      #set_fact: 
+        #stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
+      vars:
+        # remote directory name
+        #project_name: "{{ item.project_name }}"
+        # location of the compose override in ../docker/
+        #stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
+        build_dir: "{{ item.dir }}"
+        build_name: "{{ item.name }}"
+      with_items: "{{ builds }}"
