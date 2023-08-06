@@ -17,7 +17,7 @@
   community.docker.docker_image:
     build:
       path: docker/{{ project_name }}/{{ build_dir }}
-    name: {{ registry_name }}/{{ build_name }}
+    name: "{{ registry_name ~ '/' ~ build_name }}"
     tag: "{{ build_tag }}"
     push: true
     source: build
