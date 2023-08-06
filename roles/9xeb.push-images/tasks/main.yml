@@ -12,6 +12,7 @@
     username: "{{ registry_username }}"
     password: "{{ registry_password }}"
     reauthorize: yes
+    
 
 - name: Build an image and push it to a private repo
   community.docker.docker_image:
@@ -21,6 +22,7 @@
     tag: "{{ build_tag }}"
     push: true
     source: build
+    force_source: true
 
 # - name: Log out of private registry
 #   docker_login:
