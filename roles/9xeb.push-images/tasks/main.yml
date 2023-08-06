@@ -6,6 +6,13 @@
     src: "{{ build_dir ~ '/' }}"
     dest: docker/{{ project_name }}/{{ build_dir }}/
 
+- name: Log into private registry and force re-authorization
+  docker_login:
+    registry: "{{ registry_name }}"
+    username: "{{ registry_username }}"
+    password: "{{ registry_password }}"
+    reauthorize: yes
+
 - name: Build an image and push it to a private repo
   community.docker.docker_image:
     build:
@@ -14,3 +21,10 @@
     tag: "{{ build_tag }}"
     push: true
     source: build
+
+- name: Log into private registry and force re-authorization
+  docker_login:
+    registry: "{{ registry_name }}"
+    username: "{{ registry_username }}"
+    password: "{{ registry_password }}"
+    state: absent
