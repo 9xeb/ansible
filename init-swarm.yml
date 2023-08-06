@@ -148,6 +148,46 @@
         var: join_results
       when: "'isolatedDockerHosts' in group_names"
 
+- name: Push security stacks
+  # vars:
+  #   stacks: "{{ swarm_infra_stacks }}"
+  import_playbook: push-security.yml
+
+- name: Push registry stack for CI
+  hosts: swarmManagers[0]
+  # hosts must be all so the conditional can pick the correct ones
+  vars_files:
+    - vars/main.yml
+  vars:
+    stacks: "{{ swarm_infra_stacks }}"
+  tasks:
+    - name: Push compose stack
+      include_role:
+        name: 9xeb.push-compose
+      vars:
+        stack_conf: "{{ item.conf + ['docker-compose.volumes.' ~ item.name ~ '.yml']}}"
+        stack_dir: "{{ item.dir }}"
+        #stack_env: "{{ item.env }}"
+        stack_status: "{{ item.status }}"
+        stack_name: "{{ item.name }}"
+        swarm: true
+      with_items: "{{ stacks }}"
+      when: "item.name == 'registry'"
+
+- name: Login to registry in swarm hosts
+  hosts: swarmManagers:swarmWorkers
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: Log into private registry and force re-authorization
+      docker_login:
+        registry: "{{ registry_name }}"
+        username: "{{ registry_username }}"
+        password: "{{ registry_password }}"
+        reauthorize: yes
+      retries: 3
+      delay: 10
+
 # - name: Deploy swarmpit to manager nodes
 #   hosts: swarmManagers
 #   vars:

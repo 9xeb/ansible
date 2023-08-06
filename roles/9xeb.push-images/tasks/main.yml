@@ -22,9 +22,9 @@
     push: true
     source: build
 
-- name: Log into private registry and force re-authorization
-  docker_login:
-    registry: "{{ registry_name }}"
-    username: "{{ registry_username }}"
-    password: "{{ registry_password }}"
-    state: absent
+# - name: Log out of private registry
+#   docker_login:
+#     registry: "{{ registry_name }}"
+#     username: "{{ registry_username }}"
+#     password: "{{ registry_password }}"
+#     state: absent
