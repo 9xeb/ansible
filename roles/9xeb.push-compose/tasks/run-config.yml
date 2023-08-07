@@ -30,7 +30,7 @@
     - set_fact:
         stack_arguments: ''
     - name: Run docker compose stack in swarm
-      shell: docker stack deploy --with-registry-auth -c docker/{{ project_name }}/{{ stack_dir }}/{{ stack_name }}-swarm-ansible.yml {{ stack_name }}
+      shell: docker stack deploy --prune --with-registry-auth -c docker/{{ project_name }}/{{ stack_dir }}/{{ stack_name }}-swarm-ansible.yml {{ stack_name }}
       when: stack_status == 'present'
     - name: Remove stack in swarm in swarm
       shell: docker stack rm {{ stack_name }}
