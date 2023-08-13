@@ -3,6 +3,10 @@
 - name: Check if falco package is installed
   package_facts:
     manager: auto
+- name: Ensure curl is installed
+  package:
+    name: curl
+    state: present
 # wants crowdsec_lapi_url and crowdsec_bouncer_api_key vars
 - name: Ensure crowdsec-iptables-bouncer is installed
   block:
