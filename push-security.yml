@@ -3,10 +3,10 @@
     stacks: "{{ swarm_infra_stacks }}"
   import_playbook: push-sshnfs.yml
 
-- name: Push crowdsec full setup
-  # vars:
-  #   stacks: "{{ swarm_infra_stacks }}"
-  import_playbook: push-crowdsec.yml
+# - name: Push crowdsec full setup
+#   # vars:
+#   #   stacks: "{{ swarm_infra_stacks }}"
+#   import_playbook: push-crowdsec.yml
 
 - name: Push falco full setup
   # vars:
