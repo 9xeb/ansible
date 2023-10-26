@@ -34,7 +34,7 @@
             enabled: yes
           - port: 23:65535
             proto: udp
-            enabled: yes
+            enabled: yes 
       netmon:
         ssh_port: 2224
         port_mappings:

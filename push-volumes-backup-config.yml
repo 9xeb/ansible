@@ -1,0 +1,42 @@
+# Required directories for volumes mounts
+# zeek-logs
+# zeek-spool
+# suricata-logs
+---
+- name: Push sshnfs configuration
+  import_playbook: push-sshnfs.yml
+
+- hosts: all
+  # hosts must be all so the conditional can pick the correct ones
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: Stop {{ item.stack_name }} compose stack (project {{ item.project_name }})
+      include_role:
+        name: 9xeb.push-compose
+      when: "item.target in group_names"
+      vars:
+        # remote directory name
+        #project_name: "{{ item.project_name }}"
+        # location of the compose override in ../docker/
+        stack_name: "{{ item.stack_name }}"
+        status: absent
+      #  roles:
+      #    - 9xeb.push-compose
+      with_items: "{{ requested_stacks }}"
+#        - { project_name: purpleids, stack_name: network, target: 'networkHosts', status: present }
+#        - { project_name: purpleids, stack_name: analysis, target: 'analysisHosts', status: present }
+#        - { project_name: purpleids, stack_name: dvwa, target: 'analysisHosts', status: present }
+
+
+- hosts: storageHosts
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: Ensure borgmatic config for docker volumes is not in cronjob
+      lineinfile:
+        dest: /etc/cron.d/borgmatic
+        regexp: "{{ '43 1 * * * root borgmatic -c /etc/borgmatic/' ~ item.1 ~ '_' ~ item.0.repo_name ~ '.yaml' }}"
+        state: absent
+      loop: "{{ requested_backups|product(groups['backupHosts'])|list }}"
+      when: "item.0.target in group_names"
